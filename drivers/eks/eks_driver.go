@@ -38,8 +38,9 @@ import (
 )
 
 var amiForRegion = map[string]string{
-	"us-west-2": "ami-73a6e20b",
-	"us-east-1": "ami-dea4d5a1",
+	"us-west-2": "ami-08cab282f9979fc7a",
+	"us-east-1": "ami-0b2ae3c6bda8b5c06",
+	"eu-west-1": "ami-066110c1a7466949e",
 }
 
 type Driver struct {
@@ -157,7 +158,6 @@ func (d *Driver) GetDriverCreateOptions(ctx context.Context) (*types.DriverFlags
 		Usage: "Comma-separated list of subnets in the virtual network to use",
 	}
 	driverFlag.Options["service-role"] = &types.Flag{
-		Type:  types.StringType,
 		Usage: "The service role to use to perform the cluster operations in AWS",
 	}
 	driverFlag.Options["security-groups"] = &types.Flag{
@@ -375,7 +375,7 @@ func (d *Driver) Create(ctx context.Context, options *types.DriverOptions, _ *ty
 		logrus.Infof("Bringing up vpc")
 
 		stack, err := d.createStack(svc, getVPCStackName(state), displayName,
-			"https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-vpc-sample.yaml",
+			"https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-vpc-sample.yaml",
 			[]*cloudformation.Parameter{})
 		if err != nil {
 			return nil, fmt.Errorf("error creating stack: %v", err)
@@ -416,7 +416,7 @@ func (d *Driver) Create(ctx context.Context, options *types.DriverOptions, _ *ty
 		logrus.Infof("Creating service role")
 
 		stack, err := d.createStack(svc, getServiceRoleName(state), displayName,
-			"https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-service-role.yaml", nil)
+			"https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-service-role.yaml", nil)
 		if err != nil {
 			return nil, fmt.Errorf("error creating stack: %v", err)
 		}
@@ -481,7 +481,7 @@ func (d *Driver) Create(ctx context.Context, options *types.DriverOptions, _ *ty
 	logrus.Infof("Creating worker nodes")
 
 	stack, err := d.createStack(svc, getWorkNodeName(state), displayName,
-		"https://amazon-eks.s3-us-west-2.amazonaws.com/1.10.3/2018-06-05/amazon-eks-nodegroup.yaml",
+		"https://amazon-eks.s3-us-west-2.amazonaws.com/cloudformation/2018-08-30/amazon-eks-nodegroup.yaml",
 		[]*cloudformation.Parameter{
 			{ParameterKey: aws.String("ClusterName"), ParameterValue: aws.String(state.ClusterName)},
 			{ParameterKey: aws.String("ClusterControlPlaneSecurityGroup"),
